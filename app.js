@@ -1,0 +1,9 @@
+// ...existing imports...
+
+const ordersRoute = require('./routes/orders');
+
+// ...existing middleware setup...
+
+app.use('/api/orders', ordersRoute);
+
+// ...rest of the code...
