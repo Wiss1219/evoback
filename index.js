@@ -14,11 +14,17 @@ if (!process.env.MONGODB_URI) {
 
 // Middleware
 app.use(express.json());
-app.use(cors({ 
-  origin: 'https://evofront.onrender.com', // ✅ Corrected: Only allow frontend URL
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true
-}));
+
+// ✅ Correct CORS Configuration
+const corsOptions = {
+  origin: 'https://evofront.onrender.com', // ✅ Allow only your frontend
+  methods: 'GET,POST,PUT,DELETE,OPTIONS', // ✅ Ensure preflight requests are handled
+  allowedHeaders: ['Content-Type', 'Authorization'], // ✅ Allow specific headers
+  credentials: true // ✅ Allow cookies and authorization headers
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // ✅ Handle preflight requests
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
