@@ -42,36 +42,47 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ✅ Login Route
+// Login Route with detailed logging
 router.post('/login', async (req, res) => {
   try {
+    console.log('Login attempt:', req.body); // Log the incoming request
     const { email, password } = req.body;
 
-    // Basic validation
+    // Basic validation with logging
     if (!email || !password) {
+      console.log('Missing credentials:', { email: !!email, password: !!password });
       return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // Find user by email
+    // Find user
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('User not found:', email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
+      console.log('Invalid password for user:', email);
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    // Generate and send token
+    // Generate token
     const token = jwt.sign(
       { userId: user._id },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
 
-    res.json({ token, user: { id: user._id, email: user.email } });
+    console.log('Login successful:', { userId: user._id, email: user.email });
+    res.json({ 
+      token, 
+      user: { 
+        id: user._id, 
+        email: user.email 
+      } 
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ message: 'Server error during login' });
