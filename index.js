@@ -14,7 +14,11 @@ if (!process.env.MONGODB_URI) {
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({ 
+  origin: 'https://evofront.onrender.com', // ✅ Corrected: Only allow frontend URL
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
