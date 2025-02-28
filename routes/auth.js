@@ -4,15 +4,15 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-// Middleware to set CORS headers for all auth responses
+// ✅ CORS Headers for Auth Routes
 router.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://evofront.onrender.com'); // ✅ Ensure response includes this
+  res.header('Access-Control-Allow-Origin', 'https://evofront.onrender.com'); // ✅ Allow frontend
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   next();
 });
 
-// Register Route
+// ✅ Register Route
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -34,7 +34,7 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login Route
+// ✅ Login Route
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;

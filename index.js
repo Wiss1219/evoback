@@ -18,7 +18,7 @@ app.use(express.json());
 // ✅ Correct CORS Configuration
 const corsOptions = {
   origin: 'https://evofront.onrender.com', // ✅ Allow only your frontend
-  methods: 'GET,POST,PUT,DELETE,OPTIONS', // ✅ Ensure preflight requests are handled
+  methods: 'GET, POST, PUT, DELETE, OPTIONS', // ✅ Ensure preflight requests are handled
   allowedHeaders: ['Content-Type', 'Authorization'], // ✅ Allow specific headers
   credentials: true // ✅ Allow cookies and authorization headers
 };
