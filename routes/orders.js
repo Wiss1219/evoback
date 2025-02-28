@@ -1,46 +1,56 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
 const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 
-// Create new order
-router.post('/', auth, async (req, res) => {
-  try {
-    const { shippingDetails } = req.body;
-    const cart = await Cart.findOne({ user: req.user.id });
+// ✅ CORS Headers for Orders Routes
+router.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://evofront.onrender.com'); // ✅ Allow frontend
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  next();
+});
 
-    if (!cart || cart.items.length === 0) {
-      return res.status(400).json({ message: 'Cart is empty' });
+// Create Order
+router.post('/', async (req, res) => {
+  try {
+    const { items, shippingDetails } = req.body;
+
+    // Basic validation
+    if (!items || items.length === 0) {
+      return res.status(400).json({ message: 'Items are required' });
     }
 
+    // Calculate total price
+    const total = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+    // Create new order
     const order = new Order({
       user: req.user.id,
-      items: cart.items,
-      total: cart.total,
+      items,
+      total,
       shippingDetails
     });
-
     await order.save();
-    
-    // Clear cart after order is created
-    cart.items = [];
-    cart.total = 0;
-    await cart.save();
 
-    res.status(201).json(order);
+    // Clear cart
+    await Cart.findOneAndDelete({ user: req.user.id });
+
+    res.status(201).json({ message: 'Order created successfully', order });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Order creation error:', error);
+    res.status(500).json({ message: 'Server error during order creation' });
   }
 });
 
-// Get user's orders
-router.get('/', auth, async (req, res) => {
+// Get Orders
+router.get('/', async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+    const orders = await Order.find({ user: req.user.id }).populate('items.product');
     res.json(orders);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Get orders error:', error);
+    res.status(500).json({ message: 'Server error during fetching orders' });
   }
 });
 

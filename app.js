@@ -1,9 +1,16 @@
-// ...existing imports...
+const express = require('express');
+const app = express();
 
-const ordersRoute = require('./routes/orders');
+// Import routes
+const authRoutes = require('./routes/auth');
+const cartRoutes = require('./routes/cart');
+const ordersRoutes = require('./routes/orders');
+const productsRoutes = require('./routes/products');
 
-// ...existing middleware setup...
+// Use routes
+app.use('/api/auth', authRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/products', productsRoutes);
 
-app.use('/api/orders', ordersRoute);
-
-// ...rest of the code...
+module.exports = app;
