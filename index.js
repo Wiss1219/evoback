@@ -30,11 +30,19 @@ app.use('/api/orders', require('./routes/orders'));
 
 // Serve static files only in production
 if (process.env.NODE_ENV === 'production') {
-// Serve static files from the frontend's dist folder
-app.use(express.static(path.join(__dirname, '../frontend/client/dist')));  
+  // Serve static files from the correct frontend dist folder
+  const distPath = path.join(__dirname, '../frontend/client/dist');
+  app.use(express.static(distPath));
+
   // Handle React routing, return all requests to React app
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/client/dist', 'index.html'));
+    const indexPath = path.join(distPath, 'index.html');
+    res.sendFile(indexPath, err => {
+      if (err) {
+        console.error('Error serving index.html:', err);
+        res.status(500).send('Error loading application');
+      }
+    });
   });
 } else {
   // Handle 404 for API routes in development
